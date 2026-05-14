@@ -1,1208 +1,245 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Diagnóstico de Contratações de Inovação</title>
-<style>
-  @import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap');
-
-  :root {
-    --bg: #F5F2EC;
-    --surface: #FFFFFF;
-    --ink: #1A1714;
-    --ink-soft: #6B6560;
-    --accent: #C84B2F;
-    --accent-light: #F5E8E4;
-    --accent-mid: #E8A090;
-    --line: #E2DDD8;
-    --green: #2D6A4F;
-    --green-light: #E8F4EE;
-    --yellow: #B8860B;
-    --yellow-light: #FFF8E7;
-    --radius: 12px;
-    --radius-sm: 6px;
-  }
-
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-
-  body {
-    font-family: 'DM Sans', sans-serif;
-    background: var(--bg);
-    color: var(--ink);
-    min-height: 100vh;
-    font-size: 16px;
-    line-height: 1.6;
-  }
-
-  /* Layout */
-  .shell {
-    max-width: 720px;
-    margin: 0 auto;
-    padding: 0 24px 80px;
-  }
-
-  /* Header */
-  .header {
-    padding: 48px 0 40px;
-    border-bottom: 1px solid var(--line);
-    margin-bottom: 40px;
-  }
-
-  .header-label {
-    font-size: 11px;
-    font-weight: 600;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: var(--accent);
-    margin-bottom: 12px;
-  }
-
-  .header h1 {
-    font-family: 'DM Serif Display', serif;
-    font-size: clamp(28px, 5vw, 40px);
-    line-height: 1.15;
-    color: var(--ink);
-    margin-bottom: 16px;
-  }
-
-  .header p {
-    font-size: 16px;
-    color: var(--ink-soft);
-    max-width: 560px;
-    line-height: 1.7;
-  }
-
-  /* Progress */
-  .progress-bar {
-    height: 3px;
-    background: var(--line);
-    border-radius: 2px;
-    margin-bottom: 32px;
-    overflow: hidden;
-  }
-
-  .progress-fill {
-    height: 100%;
-    background: var(--accent);
-    border-radius: 2px;
-    transition: width 0.4s ease;
-  }
-
-  .progress-label {
-    font-size: 12px;
-    color: var(--ink-soft);
-    margin-bottom: 8px;
-    font-weight: 500;
-  }
-
-  /* Sections */
-  .section {
-    display: none;
-    animation: fadeIn 0.3s ease;
-  }
-
-  .section.active { display: block; }
-
-  @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(8px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-
-  /* Section header */
-  .section-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    background: var(--accent-light);
-    color: var(--accent);
-    font-size: 11px;
-    font-weight: 600;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    padding: 6px 12px;
-    border-radius: 20px;
-    margin-bottom: 20px;
-  }
-
-  .section h2 {
-    font-family: 'DM Serif Display', serif;
-    font-size: clamp(20px, 3vw, 26px);
-    margin-bottom: 8px;
-    line-height: 1.3;
-  }
-
-  .section-desc {
-    font-size: 14px;
-    color: var(--ink-soft);
-    margin-bottom: 32px;
-    line-height: 1.7;
-  }
-
-  /* Form elements */
-  .field {
-    margin-bottom: 28px;
-  }
-
-  .field label {
-    display: block;
-    font-size: 15px;
-    font-weight: 500;
-    color: var(--ink);
-    margin-bottom: 8px;
-    line-height: 1.5;
-  }
-
-  .field-hint {
-    font-size: 13px;
-    color: var(--ink-soft);
-    margin-top: -4px;
-    margin-bottom: 10px;
-    line-height: 1.6;
-    padding: 10px 14px;
-    background: var(--yellow-light);
-    border-left: 3px solid var(--yellow);
-    border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
-  }
-
-  textarea {
-    width: 100%;
-    padding: 14px 16px;
-    border: 1.5px solid var(--line);
-    border-radius: var(--radius);
-    font-family: 'DM Sans', sans-serif;
-    font-size: 15px;
-    color: var(--ink);
-    background: var(--surface);
-    resize: vertical;
-    min-height: 100px;
-    transition: border-color 0.2s;
-    line-height: 1.6;
-  }
-
-  textarea:focus {
-    outline: none;
-    border-color: var(--accent);
-  }
-
-  textarea::placeholder { color: #B0AAA4; }
-
-  /* Radio / Yes-No */
-  .yn-group {
-    display: flex;
-    gap: 12px;
-  }
-
-  .yn-option {
-    flex: 1;
-    position: relative;
-  }
-
-  .yn-option input {
-    position: absolute;
-    opacity: 0;
-    width: 0;
-    height: 0;
-  }
-
-  .yn-option label {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    padding: 12px 20px;
-    border: 1.5px solid var(--line);
-    border-radius: var(--radius);
-    cursor: pointer;
-    font-size: 15px;
-    font-weight: 500;
-    transition: all 0.15s;
-    background: var(--surface);
-    user-select: none;
-  }
-
-  .yn-option input:checked + label {
-    border-color: var(--accent);
-    background: var(--accent-light);
-    color: var(--accent);
-  }
-
-  .yn-option label:hover {
-    border-color: var(--accent-mid);
-    background: #FDF8F7;
-  }
-
-  .yn-icon { font-size: 18px; }
-
-  /* Radio group for P4 and P10 */
-  .radio-group {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-  }
-
-  .radio-option {
-    position: relative;
-  }
-
-  .radio-option input {
-    position: absolute;
-    opacity: 0;
-    width: 0;
-    height: 0;
-  }
-
-  .radio-option label {
-    display: flex;
-    align-items: flex-start;
-    gap: 12px;
-    padding: 14px 16px;
-    border: 1.5px solid var(--line);
-    border-radius: var(--radius);
-    cursor: pointer;
-    font-size: 15px;
-    transition: all 0.15s;
-    background: var(--surface);
-    line-height: 1.5;
-  }
-
-  .radio-option input:checked + label {
-    border-color: var(--accent);
-    background: var(--accent-light);
-  }
-
-  .radio-option label:hover {
-    border-color: var(--accent-mid);
-    background: #FDF8F7;
-  }
-
-  .radio-dot {
-    width: 18px;
-    height: 18px;
-    min-width: 18px;
-    border-radius: 50%;
-    border: 2px solid var(--line);
-    margin-top: 2px;
-    transition: all 0.15s;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  .radio-option input:checked + label .radio-dot {
-    border-color: var(--accent);
-    background: var(--accent);
-  }
-
-  .radio-option input:checked + label .radio-dot::after {
-    content: '';
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-    background: white;
-  }
-
-  /* Divider */
-  .divider {
-    height: 1px;
-    background: var(--line);
-    margin: 32px 0;
-  }
-
-  /* Buttons */
-  .btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    padding: 14px 28px;
-    border-radius: var(--radius);
-    font-family: 'DM Sans', sans-serif;
-    font-size: 15px;
-    font-weight: 600;
-    cursor: pointer;
-    border: none;
-    transition: all 0.2s;
-  }
-
-  .btn-primary {
-    background: var(--accent);
-    color: white;
-  }
-
-  .btn-primary:hover { background: #A83D26; transform: translateY(-1px); }
-  .btn-primary:active { transform: translateY(0); }
-
-  .btn-ghost {
-    background: transparent;
-    color: var(--ink-soft);
-    border: 1.5px solid var(--line);
-  }
-
-  .btn-ghost:hover {
-    border-color: var(--ink-soft);
-    color: var(--ink);
-  }
-
-  .btn:disabled {
-    opacity: 0.4;
-    cursor: not-allowed;
-    transform: none;
-  }
-
-  .btn-row {
-    display: flex;
-    gap: 12px;
-    align-items: center;
-    margin-top: 36px;
-  }
-
-  /* Loading */
-  .loading-state {
-    display: none;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 60px 0;
-    gap: 20px;
-    text-align: center;
-  }
-
-  .loading-state.active { display: flex; }
-
-  .spinner {
-    width: 40px;
-    height: 40px;
-    border: 3px solid var(--line);
-    border-top-color: var(--accent);
-    border-radius: 50%;
-    animation: spin 0.8s linear infinite;
-  }
-
-  @keyframes spin { to { transform: rotate(360deg); } }
-
-  .loading-text {
-    font-size: 15px;
-    color: var(--ink-soft);
-    font-style: italic;
-  }
-
-  /* Result */
-  .result-header {
-    margin-bottom: 32px;
-  }
-
-  .instrument-card {
-    background: var(--surface);
-    border-radius: var(--radius);
-    border: 1.5px solid var(--line);
-    overflow: hidden;
-    margin-bottom: 16px;
-  }
-
-  .instrument-card.primary {
-    border-color: var(--accent);
-    border-width: 2px;
-  }
-
-  .instrument-card-header {
-    padding: 20px 24px;
-    display: flex;
-    align-items: center;
-    gap: 16px;
-  }
-
-  .instrument-card.primary .instrument-card-header {
-    background: var(--accent-light);
-  }
-
-  .instrument-icon {
-    font-size: 28px;
-    line-height: 1;
-  }
-
-  .instrument-name {
-    font-family: 'DM Serif Display', serif;
-    font-size: 20px;
-    color: var(--ink);
-  }
-
-  .instrument-card.primary .instrument-name {
-    color: var(--accent);
-  }
-
-  .instrument-tag {
-    margin-left: auto;
-    font-size: 11px;
-    font-weight: 600;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    padding: 4px 10px;
-    border-radius: 20px;
-    background: var(--accent);
-    color: white;
-  }
-
-  .instrument-tag.secondary {
-    background: var(--line);
-    color: var(--ink-soft);
-  }
-
-  .instrument-card-body {
-    padding: 20px 24px;
-    border-top: 1px solid var(--line);
-  }
-
-  .instrument-card.primary .instrument-card-body {
-    border-top-color: var(--accent-mid);
-  }
-
-  .justificativa {
-    font-size: 15px;
-    color: var(--ink);
-    line-height: 1.75;
-  }
-
-  .justificativa p { margin-bottom: 12px; }
-  .justificativa p:last-child { margin-bottom: 0; }
-
-  /* Base legal */
-  .base-legal {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    font-size: 12px;
-    color: var(--ink-soft);
-    background: var(--bg);
-    padding: 4px 10px;
-    border-radius: 4px;
-    margin-top: 12px;
-    font-weight: 500;
-  }
-
-  /* Preparatory note */
-  .prep-note {
-    background: var(--yellow-light);
-    border: 1px solid #E8D07A;
-    border-radius: var(--radius);
-    padding: 16px 20px;
-    margin-bottom: 16px;
-    font-size: 14px;
-    color: var(--ink);
-    line-height: 1.6;
-  }
-
-  .prep-note strong { color: var(--yellow); }
-
-  /* Alternatives section */
-  .alternatives-label {
-    font-size: 12px;
-    font-weight: 600;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: var(--ink-soft);
-    margin: 24px 0 12px;
-  }
-
-  /* Restart */
-  .restart-row {
-    margin-top: 40px;
-    padding-top: 32px;
-    border-top: 1px solid var(--line);
-    display: flex;
-    align-items: center;
-    gap: 16px;
-  }
-
-  .restart-text {
-    font-size: 14px;
-    color: var(--ink-soft);
-  }
-
-  /* Error */
-  .error-box {
-    background: #FEF2F2;
-    border: 1px solid #FECACA;
-    border-radius: var(--radius);
-    padding: 16px 20px;
-    font-size: 14px;
-    color: #991B1B;
-    margin-top: 16px;
-    display: none;
-  }
-
-  .error-box.active { display: block; }
-
-  /* Responsive */
-  @media (max-width: 480px) {
-    .shell { padding: 0 16px 60px; }
-    .header { padding: 32px 0 28px; }
-    .yn-group { flex-direction: column; }
-  }
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diagnóstico CPSI - Contratação de Inovação</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=DM+Serif+Display&display=swap');
+
+        :root {
+            --bg: #F8F9FA;
+            --surface: #FFFFFF;
+            --ink: #1A1C1E;
+            --ink-soft: #44474E;
+            --accent: #005AC1; /* Azul institucional para confiança */
+            --accent-light: #D7E3FF;
+            --success: #198754;
+            --warning: #F59E0B;
+            --line: #DEE2E6;
+            --radius: 12px;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--ink); line-height: 1.6; }
+
+        .shell { max-width: 680px; margin: 0 auto; padding: 40px 20px; }
+        
+        .header { text-align: center; margin-bottom: 40px; }
+        .header h1 { font-family: 'DM Serif Display', serif; font-size: 32px; margin-bottom: 12px; }
+        .header p { color: var(--ink-soft); font-size: 16px; }
+
+        .card { background: var(--surface); border-radius: var(--radius); padding: 32px; border: 1px solid var(--line); box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
+        
+        .step-indicator { font-size: 12px; font-weight: 700; text-transform: uppercase; color: var(--accent); margin-bottom: 8px; display: block; }
+        
+        .question-box { display: none; animation: fadeIn 0.4s ease; }
+        .question-box.active { display: block; }
+
+        h2 { font-size: 20px; margin-bottom: 24px; color: var(--ink); }
+
+        .options-list { display: flex; flex-direction: column; gap: 12px; }
+        
+        .option-item {
+            border: 2px solid var(--line);
+            border-radius: var(--radius);
+            padding: 16px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .option-item:hover { border-color: var(--accent-light); background: #F0F4FF; }
+        .option-item.selected { border-color: var(--accent); background: var(--accent-light); }
+        
+        .radio-circle { width: 20px; height: 20px; border: 2px solid var(--line); border-radius: 50%; position: relative; }
+        .option-item.selected .radio-circle { border-color: var(--accent); }
+        .option-item.selected .radio-circle::after { content: ''; width: 10px; height: 10px; background: var(--accent); border-radius: 50%; position: absolute; top: 3px; left: 3px; }
+
+        .btn-footer { margin-top: 32px; display: flex; justify-content: space-between; align-items: center; }
+        
+        .btn { padding: 12px 24px; border-radius: 8px; font-weight: 600; cursor: pointer; border: none; transition: 0.2s; }
+        .btn-next { background: var(--accent); color: white; }
+        .btn-next:disabled { opacity: 0.5; cursor: not-allowed; }
+        .btn-back { background: transparent; color: var(--ink-soft); }
+
+        /* Resultado */
+        .result-card { display: none; }
+        .result-badge { display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 700; margin-bottom: 16px; }
+        .badge-cpsi { background: #D1FAE5; color: #065F46; }
+        .badge-alt { background: #FEF3C7; color: #92400E; }
+        
+        .recommendation-title { font-family: 'DM Serif Display', serif; font-size: 28px; margin-bottom: 16px; }
+        .justification { background: #F8F9FA; padding: 20px; border-radius: 8px; margin-top: 20px; border-left: 4px solid var(--accent); }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
 </head>
 <body>
+
 <div class="shell">
-
-  <div class="header">
-    <div class="header-label">Ferramenta de Diagnóstico</div>
-    <h1>Qual instrumento usar para contratar inovação?</h1>
-    <p>Responda as perguntas sobre o seu problema e contexto. O algoritmo identifica o instrumento jurídico mais adequado e explica o porquê.</p>
-  </div>
-
-  <!-- SEÇÃO 1: O PROBLEMA -->
-  <div class="section active" id="sec-1">
-    <div class="section-badge">📍 Camada 1 — O problema</div>
-    <h2>Descreva o problema que você precisa resolver</h2>
-    <p class="section-desc">Ainda não estamos falando de soluções ou instrumentos. Queremos entender o problema em si.</p>
-
-    <div class="field">
-      <label>Definição do problema</label>
-      <textarea id="f-problema" rows="4" placeholder="Qual situação compromete resultados ou impacta o cidadão? Descreva sem mencionar tecnologia ou solução."></textarea>
+    <div class="header">
+        <p>📊 Diagnóstico Ágil</p>
+        <h1>CPSI ou outra solução?</h1>
+        <p>Descubra em menos de 2 minutos o instrumento ideal para sua contratação de inovação.</p>
     </div>
 
-    <div class="field">
-      <label>Causas e consequências</label>
-      <textarea id="f-causas" rows="3" placeholder="Por que esse problema existe? O que acontece se não for resolvido?"></textarea>
+    <div class="card">
+        <!-- Passo 1: Maturidade -->
+        <div class="question-box active" id="step1">
+            <span class="step-indicator">Passo 1 de 4</span>
+            <h2>A solução que você precisa já existe "pronta" no mercado?</h2>
+            <div class="options-list">
+                <div class="option-item" onclick="selectOption('q1', 'ready')">
+                    <div class="radio-circle"></div>
+                    <div><strong>Sim.</strong> É um produto/serviço de prateleira, basta comprar e instalar.</div>
+                </div>
+                <div class="option-item" onclick="selectOption('q1', 'innovation')">
+                    <div class="radio-circle"></div>
+                    <div><strong>Não/Parcialmente.</strong> Precisa ser adaptada, desenvolvida ou testada para o nosso contexto.</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Passo 2: Risco -->
+        <div class="question-box" id="step2">
+            <span class="step-indicator">Passo 2 de 4</span>
+            <h2>Existe o risco da solução não funcionar tecnicamente após o desenvolvimento?</h2>
+            <div class="options-list">
+                <div class="option-item" onclick="selectOption('q2', 'high')">
+                    <div class="radio-circle"></div>
+                    <div><strong>Alto Risco.</strong> É algo inédito ou pesquisa científica profunda.</div>
+                </div>
+                <div class="option-item" onclick="selectOption('q2', 'moderate')">
+                    <div class="radio-circle"></div>
+                    <div><strong>Risco Moderado.</strong> Inovação de mercado, startups ou melhoria de processos existentes.</div>
+                </div>
+                <div class="option-item" onclick="selectOption('q2', 'low')">
+                    <div class="radio-circle"></div>
+                    <div><strong>Baixo Risco.</strong> A tecnologia é conhecida, o desafio é apenas a implementação.</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Passo 3: Pagamento -->
+        <div class="question-box" id="step3">
+            <span class="step-indicator">Passo 3 de 4</span>
+            <h2>O foco principal do órgão é:</h2>
+            <div class="options-list">
+                <div class="option-item" onclick="selectOption('q3', 'result')">
+                    <div class="radio-circle"></div>
+                    <div><strong>Resultado.</strong> Queremos uma solução funcionando (MVP/Protótipo).</div>
+                </div>
+                <div class="option-item" onclick="selectOption('q3', 'process')">
+                    <div class="radio-circle"></div>
+                    <div><strong>Pesquisa.</strong> Queremos financiar o esforço de descoberta, mesmo sem garantia de entrega final.</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Passo 4: Valor -->
+        <div class="question-box" id="step4">
+            <span class="step-indicator">Passo 4 de 4</span>
+            <h2>Qual o orçamento estimado para o teste/desenvolvimento?</h2>
+            <div class="options-list">
+                <div class="option-item" onclick="selectOption('q4', 'under')">
+                    <div class="radio-circle"></div>
+                    <div>Até R$ 1,6 milhão.</div>
+                </div>
+                <div class="option-item" onclick="selectOption('q4', 'over')">
+                    <div class="radio-circle"></div>
+                    <div>Acima de R$ 1,6 milhão.</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="btn-footer" id="navigation">
+            <button class="btn btn-back" id="btnBack" onclick="changeStep(-1)" style="visibility: hidden;">← Voltar</button>
+            <button class="btn btn-next" id="btnNext" onclick="changeStep(1)" disabled>Próximo</button>
+        </div>
+
+        <!-- Resultado Final -->
+        <div class="result-card" id="resultArea">
+            <div id="badgeTarget"></div>
+            <h2 class="recommendation-title" id="titleTarget"></h2>
+            <div class="justification" id="textTarget"></div>
+            <button class="btn btn-next" style="margin-top: 24px; width: 100%;" onclick="location.reload()">Novo Diagnóstico</button>
+        </div>
     </div>
-
-    <div class="field">
-      <label>Público impactado</label>
-      <textarea id="f-publico" rows="2" placeholder="Quem sofre diretamente e indiretamente com esse problema?"></textarea>
-    </div>
-
-    <div class="btn-row">
-      <button class="btn btn-primary" onclick="goTo(2)">Continuar →</button>
-    </div>
-  </div>
-
-  <!-- SEÇÃO 2: MERCADO E VIABILIDADE -->
-  <div class="section" id="sec-2">
-    <div class="progress-label">Etapa 2 de 3</div>
-    <div class="progress-bar"><div class="progress-fill" style="width:33%"></div></div>
-
-    <div class="section-badge">🔍 Camada 2 — Mercado e viabilidade</div>
-    <h2>O que você já sabe sobre soluções e mercado</h2>
-    <p class="section-desc">Estas informações ajudam a entender o estado da arte e a maturidade das opções disponíveis.</p>
-
-    <div class="field">
-      <label>Qual é a barreira técnica? É possível especificar a solução antes de contratar?</label>
-      <textarea id="f-barreira" rows="3" placeholder="Descreva a dificuldade técnica principal. Você conseguiria escrever as especificações técnicas da solução agora?"></textarea>
-    </div>
-
-    <div class="field">
-      <label>Soluções existentes no mercado</label>
-      <textarea id="f-solucoes" rows="3" placeholder="Você encontrou soluções, produtos ou fornecedores que resolvem esse problema — mesmo que parcialmente?"></textarea>
-    </div>
-
-    <div class="field">
-      <label>Maturidade das soluções encontradas (TRL)</label>
-      <div class="field-hint">
-        <strong>Escala TRL:</strong> TRL 1–3 = pesquisa básica/conceito. TRL 4–5 = validado em laboratório. TRL 6–7 = demonstrado em ambiente relevante. TRL 8–9 = solução pronta ou em operação. Se não encontrou soluções, indique TRL 1.
-      </div>
-      <textarea id="f-trl" rows="2" placeholder="Ex: encontrei duas startups com soluções em TRL 5–6. Ou: não encontrei nada, TRL estimado 1–2."></textarea>
-    </div>
-
-    <div class="btn-row">
-      <button class="btn btn-ghost" onclick="goTo(1)">← Voltar</button>
-      <button class="btn btn-primary" onclick="goTo(3)">Continuar →</button>
-    </div>
-  </div>
-
-  <!-- SEÇÃO 3: PERGUNTAS DIAGNÓSTICAS -->
-  <div class="section" id="sec-3">
-    <div class="progress-label">Etapa 3 de 3</div>
-    <div class="progress-bar"><div class="progress-fill" style="width:66%"></div></div>
-
-    <div class="section-badge">⚙️ Camada 3 — Diagnóstico</div>
-    <h2>Perguntas de diagnóstico</h2>
-    <p class="section-desc">Responda com base na sua situação atual. Cada resposta ajusta o diagnóstico.</p>
-
-    <!-- P6 -->
-    <div class="field">
-      <label>P1 — Você consegue descrever o problema sem mencionar uma solução ou tecnologia específica?</label>
-      <div class="yn-group">
-        <div class="yn-option"><input type="radio" name="p6" id="p6s" value="S"><label for="p6s"><span class="yn-icon">✓</span> Sim</label></div>
-        <div class="yn-option"><input type="radio" name="p6" id="p6n" value="N"><label for="p6n"><span class="yn-icon">✗</span> Não</label></div>
-      </div>
-    </div>
-
-    <!-- P7 -->
-    <div class="field">
-      <label>P2 — Você ainda não sabe como estruturar a solução e gostaria que empresas ou especialistas apresentassem propostas antes de abrir uma contratação?</label>
-      <div class="yn-group">
-        <div class="yn-option"><input type="radio" name="p7" id="p7s" value="S"><label for="p7s"><span class="yn-icon">✓</span> Sim</label></div>
-        <div class="yn-option"><input type="radio" name="p7" id="p7n" value="N"><label for="p7n"><span class="yn-icon">✗</span> Não</label></div>
-      </div>
-    </div>
-
-    <!-- P1 -->
-    <div class="field">
-      <label>P3 — O órgão tem capacidade e interesse de desenvolver a solução internamente ou com um parceiro?</label>
-      <div class="yn-group">
-        <div class="yn-option"><input type="radio" name="p1" id="p1s" value="S"><label for="p1s"><span class="yn-icon">✓</span> Sim</label></div>
-        <div class="yn-option"><input type="radio" name="p1" id="p1n" value="N"><label for="p1n"><span class="yn-icon">✗</span> Não</label></div>
-      </div>
-    </div>
-
-    <!-- P8 (conditional) -->
-    <div class="field" id="field-p8" style="display:none">
-      <label>P4 — O seu órgão tem como missão principal pesquisa científica, tecnológica ou desenvolvimento de inovação — como uma universidade, instituto de pesquisa ou laboratório público?</label>
-      <div class="yn-group">
-        <div class="yn-option"><input type="radio" name="p8" id="p8s" value="S"><label for="p8s"><span class="yn-icon">✓</span> Sim</label></div>
-        <div class="yn-option"><input type="radio" name="p8" id="p8n" value="N"><label for="p8n"><span class="yn-icon">✗</span> Não</label></div>
-      </div>
-    </div>
-
-    <!-- P9 (conditional) -->
-    <div class="field" id="field-p9" style="display:none">
-      <label>P5 — O órgão vai repassar recursos financeiros para o parceiro gerir e executar o projeto — ou o parceiro trabalhará sem receber dinheiro público diretamente?</label>
-      <div class="radio-group">
-        <div class="radio-option"><input type="radio" name="p9" id="p9s" value="S"><label for="p9s"><span class="radio-dot"></span>O órgão vai repassar recursos financeiros ao parceiro</label></div>
-        <div class="radio-option"><input type="radio" name="p9" id="p9n" value="N"><label for="p9n"><span class="radio-dot"></span>O parceiro trabalhará sem receber recursos diretamente</label></div>
-      </div>
-    </div>
-
-    <div class="divider"></div>
-
-    <!-- P2 -->
-    <div class="field">
-      <label>P6 — É possível descrever as especificações técnicas da solução antes de contratar?</label>
-      <div class="yn-group">
-        <div class="yn-option"><input type="radio" name="p2" id="p2s" value="S"><label for="p2s"><span class="yn-icon">✓</span> Sim</label></div>
-        <div class="yn-option"><input type="radio" name="p2" id="p2n" value="N"><label for="p2n"><span class="yn-icon">✗</span> Não</label></div>
-      </div>
-    </div>
-
-    <!-- P10 (conditional — shown when P2=N) -->
-    <div class="field" id="field-p10" style="display:none">
-      <label>P7 — Para chegar à solução, o órgão precisaria de um processo de diálogo com fornecedores — ou consegue descrever o desafio em um edital público sem interação prévia?</label>
-      <div class="radio-group">
-        <div class="radio-option"><input type="radio" name="p10" id="p10s" value="S"><label for="p10s"><span class="radio-dot"></span>Precisaria de diálogo ativo com fornecedores para definir a solução</label></div>
-        <div class="radio-option"><input type="radio" name="p10" id="p10n" value="N"><label for="p10n"><span class="radio-dot"></span>Consigo descrever o desafio em um edital sem interação prévia</label></div>
-      </div>
-    </div>
-
-    <!-- P3 -->
-    <div class="field">
-      <label>P8 — Existe risco tecnológico real — a solução pode simplesmente não funcionar?</label>
-      <div class="field-hint">
-        Se a melhor solução encontrada está abaixo de TRL 6 (ainda não demonstrada em ambiente relevante), há risco tecnológico. Se não encontrou nenhuma solução, assuma que há risco tecnológico.
-      </div>
-      <div class="yn-group">
-        <div class="yn-option"><input type="radio" name="p3" id="p3s" value="S"><label for="p3s"><span class="yn-icon">✓</span> Sim</label></div>
-        <div class="yn-option"><input type="radio" name="p3" id="p3n" value="N"><label for="p3n"><span class="yn-icon">✗</span> Não</label></div>
-      </div>
-    </div>
-
-    <!-- P4 (conditional — shown when P3=S) -->
-    <div class="field" id="field-p4" style="display:none">
-      <label>P9 — O órgão vai financiar o processo de PD&I — ou vai pagar pelo resultado entregado?</label>
-      <div class="radio-group">
-        <div class="radio-option"><input type="radio" name="p4" id="p4processo" value="processo"><label for="p4processo"><span class="radio-dot"></span>Financiar o processo — pagar pelo esforço de pesquisa e desenvolvimento, mesmo que o resultado seja incerto</label></div>
-        <div class="radio-option"><input type="radio" name="p4" id="p4resultado" value="resultado"><label for="p4resultado"><span class="radio-dot"></span>Pagar pelo resultado — remunerar a entrega de uma solução testada e validada</label></div>
-      </div>
-    </div>
-
-    <!-- P14 (conditional — shown when P3=S e P4=resultado) -->
-    <div class="field" id="field-p14" style="display:none">
-      <label>P10 — A tecnologia que resolveria o seu problema já existe em alguma forma — mesmo que ainda não esteja pronta para uso?</label>
-      <div class="yn-group">
-        <div class="yn-option"><input type="radio" name="p14" id="p14s" value="S"><label for="p14s"><span class="yn-icon">✓</span> Sim, já existe</label></div>
-        <div class="yn-option"><input type="radio" name="p14" id="p14n" value="N"><label for="p14n"><span class="yn-icon">✗</span> Não, precisaria ser criada</label></div>
-      </div>
-    </div>
-
-    <div class="divider"></div>
-
-    <!-- P11 -->
-    <div class="field">
-      <label>P11 — Há dotação orçamentária aprovada e disponível para esta contratação?</label>
-      <div class="yn-group">
-        <div class="yn-option"><input type="radio" name="p11" id="p11s" value="S"><label for="p11s"><span class="yn-icon">✓</span> Sim</label></div>
-        <div class="yn-option"><input type="radio" name="p11" id="p11n" value="N"><label for="p11n"><span class="yn-icon">✗</span> Não</label></div>
-      </div>
-    </div>
-
-    <!-- P12 (conditional — shown when P2=S e P11=N) -->
-    <div class="field" id="field-p12" style="display:none">
-      <label>P12 — O objetivo principal é testar ou validar a solução no ambiente público, sem necessariamente pagar pelo desenvolvimento?</label>
-      <div class="yn-group">
-        <div class="yn-option"><input type="radio" name="p12" id="p12s" value="S"><label for="p12s"><span class="yn-icon">✓</span> Sim</label></div>
-        <div class="yn-option"><input type="radio" name="p12" id="p12n" value="N"><label for="p12n"><span class="yn-icon">✗</span> Não</label></div>
-      </div>
-    </div>
-
-    <!-- P13 (conditional — shown when P2=S e P11=S) -->
-    <div class="field" id="field-p13" style="display:none">
-      <label>P13 — Existe apenas um fornecedor capaz de entregar a solução — ou há razão legal específica que justifique contratar sem abrir concorrência?</label>
-      <div class="yn-group">
-        <div class="yn-option"><input type="radio" name="p13" id="p13s" value="S"><label for="p13s"><span class="yn-icon">✓</span> Sim</label></div>
-        <div class="yn-option"><input type="radio" name="p13" id="p13n" value="N"><label for="p13n"><span class="yn-icon">✗</span> Não</label></div>
-      </div>
-    </div>
-
-    <div class="error-box" id="err-incomplete">Por favor, responda todas as perguntas antes de continuar.</div>
-
-    <div class="btn-row">
-      <button class="btn btn-ghost" onclick="goTo(2)">← Voltar</button>
-      <button class="btn btn-primary" onclick="runDiagnostic()">Gerar diagnóstico →</button>
-    </div>
-  </div>
-
-  <!-- LOADING -->
-  <div class="loading-state" id="loading">
-    <div class="spinner"></div>
-    <div class="loading-text">Analisando seu caso e gerando a justificativa…</div>
-  </div>
-
-  <!-- SEÇÃO 4: RESULTADO -->
-  <div class="section" id="sec-result">
-    <div class="progress-bar"><div class="progress-fill" style="width:100%"></div></div>
-
-    <div class="result-header">
-      <div class="section-badge">✅ Diagnóstico concluído</div>
-      <h2>Instrumento recomendado</h2>
-    </div>
-
-    <div id="result-content"></div>
-
-    <div class="restart-row">
-      <div class="restart-text">Quer avaliar outro caso?</div>
-      <button class="btn btn-ghost" onclick="restart()">↺ Recomeçar</button>
-    </div>
-  </div>
-
 </div>
 
 <script>
-// ─── Navigation ───────────────────────────────────────────────────────────────
+    let currentStep = 1;
+    const answers = { q1: null, q2: null, q3: null, q4: null };
 
-function goTo(n) {
-  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-  const target = document.getElementById('sec-' + n);
-  if (target) { target.classList.add('active'); window.scrollTo(0,0); }
-}
-
-function restart() {
-  document.querySelectorAll('textarea').forEach(t => t.value = '');
-  document.querySelectorAll('input[type=radio]').forEach(r => r.checked = false);
-  updateConditionals();
-  goTo(1);
-}
-
-// ─── Conditional fields ───────────────────────────────────────────────────────
-
-function show(id) { const el = document.getElementById(id); if(el) el.style.display = 'block'; }
-function hide(id) { const el = document.getElementById(id); if(el) el.style.display = 'none'; }
-
-function getVal(name) {
-  const el = document.querySelector(`input[name="${name}"]:checked`);
-  return el ? el.value : null;
-}
-
-function updateConditionals() {
-  const p1 = getVal('p1');
-  const p2 = getVal('p2');
-  const p3 = getVal('p3');
-  const p4 = getVal('p4');
-  const p8 = getVal('p8');
-  const p11 = getVal('p11');
-
-  // P8 aparece quando P1=S
-  p1 === 'S' ? show('field-p8') : hide('field-p8');
-
-  // P9 aparece quando P1=S e P8=S
-  (p1 === 'S' && p8 === 'S') ? show('field-p9') : hide('field-p9');
-
-  // P10 aparece quando P2=N
-  p2 === 'N' ? show('field-p10') : hide('field-p10');
-
-  // P4 aparece quando P3=S
-  p3 === 'S' ? show('field-p4') : hide('field-p4');
-
-  // P14 aparece quando P3=S e P4=resultado
-  (p3 === 'S' && p4 === 'resultado') ? show('field-p14') : hide('field-p14');
-
-  // P12 aparece quando P2=S e P11=N
-  (p2 === 'S' && p11 === 'N') ? show('field-p12') : hide('field-p12');
-
-  // P13 aparece quando P2=S e P11=S
-  (p2 === 'S' && p11 === 'S') ? show('field-p13') : hide('field-p13');
-}
-
-document.querySelectorAll('input[type=radio]').forEach(r => {
-  r.addEventListener('change', updateConditionals);
-});
-
-// ─── Algorithm ────────────────────────────────────────────────────────────────
-
-const INSTRUMENTS = {
-  PITCHES: {
-    name: 'Pitches e Hackathons',
-    icon: '💡',
-    baseLegal: 'Sem previsão legal específica — atividade de fomento e inovação aberta',
-    primary: true,
-    preparatory: false
-  },
-  PMI: {
-    name: 'Procedimento de Manifestação de Interesse (PMI)',
-    icon: '📋',
-    baseLegal: 'Art. 81, Lei nº 14.133/2021',
-    primary: true,
-    preparatory: false
-  },
-  ACORDO_PDI: {
-    name: 'Acordo de Parceria para PD&I',
-    icon: '🤝',
-    baseLegal: 'Art. 9º, Lei nº 10.973/2004 — Dec. Federal nº 9.283/2018',
-    primary: true,
-    preparatory: false
-  },
-  CONVENIO_PDI: {
-    name: 'Convênio para PD&I',
-    icon: '🤝',
-    baseLegal: 'Art. 9º-A, Lei nº 10.973/2004 — Dec. Federal nº 9.283/2018',
-    primary: true,
-    preparatory: false
-  },
-  DIALOGO: {
-    name: 'Diálogo Competitivo',
-    icon: '💬',
-    baseLegal: 'Art. 32, Lei nº 14.133/2021',
-    primary: true,
-    preparatory: false
-  },
-  CONCURSO: {
-    name: 'Concurso',
-    icon: '🏆',
-    baseLegal: 'Arts. 22, §4º e 52, Lei nº 8.666/1993 — Arts. 6º, XXXIX e 30, Lei nº 14.133/2021',
-    primary: true,
-    preparatory: false
-  },
-  CONCURSO_PREP: {
-    name: 'Concurso (etapa preparatória)',
-    icon: '🏆',
-    baseLegal: 'Arts. 22, §4º e 52, Lei nº 8.666/1993 — Arts. 6º, XXXIX e 30, Lei nº 14.133/2021',
-    primary: false,
-    preparatory: true
-  },
-  DOACAO: {
-    name: 'Doação de Solução Inovadora',
-    icon: '🎁',
-    baseLegal: 'Dec. Federal nº 9.764/2019',
-    primary: true,
-    preparatory: false
-  },
-  CONTRATACAO_DIRETA: {
-    name: 'Contratação Direta',
-    icon: '📝',
-    baseLegal: 'Arts. 24–25, Lei nº 8.666/1993 — Arts. 72–75, Lei nº 14.133/2021',
-    primary: true,
-    preparatory: false
-  },
-  LICITACAO: {
-    name: 'Licitação Convencional',
-    icon: '⚖️',
-    baseLegal: 'Lei nº 8.666/1993 — Lei nº 14.133/2021',
-    primary: true,
-    preparatory: false
-  },
-  CPSI: {
-    name: 'Contrato Público de Solução Inovadora (CPSI)',
-    icon: '🚀',
-    baseLegal: 'Arts. 12–15, Lei Complementar nº 182/2021',
-    primary: true,
-    preparatory: false
-  },
-  ETEC: {
-    name: 'Encomenda Tecnológica (ETEC)',
-    icon: '🔬',
-    baseLegal: 'Art. 20, Lei nº 10.973/2004 — Art. 24, XXXI, Lei nº 8.666/1993',
-    primary: true,
-    preparatory: false
-  }
-};
-
-function runAlgorithm(r) {
-  // r = objeto com todas as respostas
-
-  // Etapa 0 — Clareza sobre o problema
-  if (r.p6 === 'N') {
-    return { primary: 'PITCHES', alternatives: ['PMI'] };
-  }
-
-  // P7 — PMI como destino quando quer exploração de mercado estruturada
-  if (r.p7 === 'S') {
-    return { primary: 'PMI', alternatives: [] };
-  }
-
-  // Etapa 1 — Make or buy
-  if (r.p1 === 'S') {
-    if (r.p8 === 'S') {
-      if (r.p9 === 'S') return { primary: 'CONVENIO_PDI', alternatives: [] };
-      if (r.p9 === 'N') return { primary: 'ACORDO_PDI', alternatives: [] };
-    }
-    // P1=S mas não é ICT — orienta para licitação ou CPSI dependendo do restante
-    // Cai no fluxo buy
-  }
-
-  // Etapa 2 — Especificabilidade ex ante
-  if (r.p2 === 'S') {
-    // Objeto especificável
-    if (r.p11 === 'N') {
-      // Sem orçamento
-      if (r.p12 === 'S') return { primary: 'DOACAO', alternatives: [] };
-      return { primary: 'DOACAO', alternatives: [] };
-    }
-    // Com orçamento
-    if (r.p13 === 'S') return { primary: 'CONTRATACAO_DIRETA', alternatives: [] };
-    if (r.p13 === 'N') return { primary: 'LICITACAO', alternatives: [] };
-  }
-
-  // Objeto não especificável — Etapa 3
-  if (r.p2 === 'N') {
-
-    // Sem risco tecnológico
-    if (r.p3 === 'N') {
-      if (r.p10 === 'S') return { primary: 'DIALOGO', alternatives: ['CONCURSO'] };
-      if (r.p10 === 'N') return { primary: 'CONCURSO', alternatives: ['DIALOGO'] };
+    function selectOption(question, value) {
+        answers[question] = value;
+        const stepDiv = document.getElementById('step' + currentStep);
+        const options = stepDiv.querySelectorAll('.option-item');
+        options.forEach((opt, idx) => {
+            opt.classList.remove('selected');
+            if(opt.getAttribute('onclick').includes(`'${value}'`)) opt.classList.add('selected');
+        });
+        document.getElementById('btnNext').disabled = false;
     }
 
-    // Com risco tecnológico
-    if (r.p3 === 'S') {
-
-      // Financiar processo → ETEC
-      if (r.p4 === 'processo') {
-        if (r.p11 === 'S') return { primary: 'ETEC', alternatives: [] };
-        if (r.p11 === 'N') return { primary: 'CONCURSO_PREP', targetInstrument: 'ETEC', alternatives: [] };
-      }
-
-      // Pagar pelo resultado → CPSI ou ETEC
-      if (r.p4 === 'resultado') {
-        if (r.p14 === 'S') {
-          // Tecnologia existe em alguma forma → CPSI
-          if (r.p11 === 'S') return { primary: 'CPSI', alternatives: [] };
-          if (r.p11 === 'N') return { primary: 'CONCURSO_PREP', targetInstrument: 'CPSI', alternatives: [] };
+    function changeStep(delta) {
+        if (currentStep + delta > 4) {
+            showResult();
+            return;
         }
-        if (r.p14 === 'N') {
-          // Tecnologia não existe → ETEC
-          if (r.p11 === 'S') return { primary: 'ETEC', alternatives: [] };
-          if (r.p11 === 'N') return { primary: 'CONCURSO_PREP', targetInstrument: 'ETEC', alternatives: [] };
-        }
-      }
+        
+        document.getElementById('step' + currentStep).classList.remove('active');
+        currentStep += delta;
+        document.getElementById('step' + currentStep).classList.add('active');
+
+        // UI Updates
+        document.getElementById('btnBack').style.visibility = currentStep > 1 ? 'visible' : 'hidden';
+        document.getElementById('btnNext').innerText = currentStep === 4 ? 'Gerar Resultado' : 'Próximo';
+        document.getElementById('btnNext').disabled = !answers['q' + currentStep];
     }
-  }
 
-  return null; // incomplete
-}
+    function showResult() {
+        document.getElementById('step' + currentStep).classList.remove('active');
+        document.getElementById('navigation').style.display = 'none';
+        const resultArea = document.getElementById('resultArea');
+        resultArea.style.display = 'block';
 
-function collectResponses() {
-  return {
-    p1:  getVal('p1'),
-    p2:  getVal('p2'),
-    p3:  getVal('p3'),
-    p4:  getVal('p4'),
-    p6:  getVal('p6'),
-    p7:  getVal('p7'),
-    p8:  getVal('p8'),
-    p9:  getVal('p9'),
-    p10: getVal('p10'),
-    p11: getVal('p11'),
-    p12: getVal('p12'),
-    p13: getVal('p13'),
-    p14: getVal('p14'),
-  };
-}
+        const badge = document.getElementById('badgeTarget');
+        const title = document.getElementById('titleTarget');
+        const text = document.getElementById('textTarget');
 
-function isComplete(r) {
-  // Perguntas sempre obrigatórias
-  if (!r.p6 || !r.p1 || !r.p2 || !r.p3 || !r.p7 || !r.p11) return false;
-
-  // Condicionais
-  if (r.p1 === 'S' && !r.p8) return false;
-  if (r.p1 === 'S' && r.p8 === 'S' && !r.p9) return false;
-  if (r.p2 === 'N' && !r.p10) return false;
-  if (r.p3 === 'S' && !r.p4) return false;
-  if (r.p3 === 'S' && r.p4 === 'resultado' && !r.p14) return false;
-  if (r.p2 === 'S' && r.p11 === 'N' && !r.p12) return false;
-  if (r.p2 === 'S' && r.p11 === 'S' && !r.p13) return false;
-
-  return true;
-}
-
-// ─── AI Justification ─────────────────────────────────────────────────────────
-
-async function getJustification(instrument, responses, formData) {
-  const instrName = INSTRUMENTS[instrument] ? INSTRUMENTS[instrument].name : instrument;
-
-  const prompt = `Você é um especialista em contratações públicas de inovação no Brasil, com profundo conhecimento do fluxograma de decisão do BID e dos instrumentos jurídicos disponíveis.
-
-Um gestor público preencheu um formulário de diagnóstico. Com base nas respostas dele, o algoritmo determinístico identificou o instrumento: **${instrName}**.
-
-**Dados do problema:**
-- Definição do problema: ${formData.problema || 'não informado'}
-- Causas e consequências: ${formData.causas || 'não informado'}
-- Público impactado: ${formData.publico || 'não informado'}
-- Barreira técnica: ${formData.barreira || 'não informado'}
-- Soluções existentes: ${formData.solucoes || 'não informado'}
-- Maturidade (TRL): ${formData.trl || 'não informado'}
-
-**Respostas diagnósticas:**
-- Consegue descrever o problema sem mencionar solução? ${responses.p6}
-- Quer que o mercado proponha estudos antes? ${responses.p7}
-- Tem capacidade de desenvolver internamente ou com parceiro? ${responses.p1}
-- Órgão é ICT pública? ${responses.p8 || 'N/A'}
-- Haverá repasse de recursos ao parceiro? ${responses.p9 || 'N/A'}
-- É possível especificar ex ante? ${responses.p2}
-- Precisa de diálogo com fornecedores? ${responses.p10 || 'N/A'}
-- Existe risco tecnológico real? ${responses.p3}
-- Vai financiar processo ou pagar pelo resultado? ${responses.p4 || 'N/A'}
-- A tecnologia já existe em alguma forma? ${responses.p14 || 'N/A'}
-- Há orçamento disponível? ${responses.p11}
-- Objetivo é testar sem pagar? ${responses.p12 || 'N/A'}
-- Fornecedor único ou dispensa? ${responses.p13 || 'N/A'}
-
-Escreva uma justificativa personalizada em 3–4 parágrafos curtos explicando:
-1. Por que o instrumento recomendado é adequado para este caso específico — referenciando os dados do problema e as respostas do gestor
-2. O que esse instrumento permite que outros não permitiriam neste caso
-3. Um cuidado prático ou ponto de atenção importante para o gestor ao usar esse instrumento
-
-Seja direto, use linguagem acessível (não excessivamente técnica), e conecte a explicação com os dados reais preenchidos pelo gestor. Não mencione o nome do instrumento na primeira frase — comece pela lógica do caso.`;
-
-  const response = await fetch("https://api.anthropic.com/v1/messages", {
-    method: "POST",
-    headers: { 
-      "Content-Type": "application/json",
-      "x-api-key": "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", // Insira sua chave aqui
-      "anthropic-version": "2023-06-01" // Este cabeçalho é obrigatório
-    },
-    body: JSON.stringify({
-      model: "claude-sonnet-4-20250514",
-      max_tokens: 1000,
-      messages: [{ role: "user", content: prompt }]
-    })
-  });
-
-  const data = await response.json();
-  return data.content?.[0]?.text || "Não foi possível gerar a justificativa.";
-}
-
-// ─── Render Result ────────────────────────────────────────────────────────────
-
-function renderResult(result, justification, responses) {
-  const container = document.getElementById('result-content');
-  const primary = INSTRUMENTS[result.primary];
-  const alternatives = (result.alternatives || []).map(k => INSTRUMENTS[k]).filter(Boolean);
-
-  let html = '';
-
-  // Preparatory note
-  if (primary.preparatory && result.targetInstrument) {
-    const target = INSTRUMENTS[result.targetInstrument];
-    html += `
-      <div class="prep-note">
-        <strong>⚠️ Atenção:</strong> O instrumento ideal para o seu caso seria o <strong>${target.name}</strong>, mas você indicou não ter orçamento disponível no momento. O <strong>Concurso</strong> pode ser usado como etapa preparatória para estruturar a demanda e atrair soluções — criando condições para avançar para o instrumento principal quando o orçamento estiver disponível.
-      </div>
-    `;
-  }
-
-  // Primary instrument card
-  html += `
-    <div class="instrument-card primary">
-      <div class="instrument-card-header">
-        <span class="instrument-icon">${primary.icon}</span>
-        <span class="instrument-name">${primary.name}</span>
-        <span class="instrument-tag">${primary.preparatory ? 'Etapa preparatória' : 'Recomendado'}</span>
-      </div>
-      <div class="instrument-card-body">
-        <div class="justificativa">${formatText(justification)}</div>
-        <div class="base-legal">📌 ${primary.baseLegal}</div>
-      </div>
-    </div>
-  `;
-
-  // Alternatives
-  if (alternatives.length > 0) {
-    html += `<div class="alternatives-label">Instrumento alternativo a considerar</div>`;
-    alternatives.forEach(alt => {
-      html += `
-        <div class="instrument-card">
-          <div class="instrument-card-header">
-            <span class="instrument-icon">${alt.icon}</span>
-            <span class="instrument-name">${alt.name}</span>
-            <span class="instrument-tag secondary">Alternativa</span>
-          </div>
-          <div class="instrument-card-body">
-            <div class="base-legal">📌 ${alt.baseLegal}</div>
-          </div>
-        </div>
-      `;
-    });
-  }
-
-  container.innerHTML = html;
-}
-
-function formatText(text) {
-  return text
-    .split('\n\n')
-    .filter(p => p.trim())
-    .map(p => `<p>${p.trim()}</p>`)
-    .join('');
-}
-
-// ─── Main diagnostic flow ─────────────────────────────────────────────────────
-
-async function runDiagnostic() {
-  const errBox = document.getElementById('err-incomplete');
-  const responses = collectResponses();
-
-  if (!isComplete(responses)) {
-    errBox.classList.add('active');
-    errBox.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    return;
-  }
-
-  errBox.classList.remove('active');
-
-  const result = runAlgorithm(responses);
-  if (!result) {
-    errBox.textContent = 'Não foi possível determinar o instrumento. Verifique suas respostas.';
-    errBox.classList.add('active');
-    return;
-  }
-
-  // Show loading
-  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-  document.getElementById('loading').classList.add('active');
-  window.scrollTo(0, 0);
-
-  // Collect form data
-  const formData = {
-    problema: document.getElementById('f-problema').value,
-    causas: document.getElementById('f-causas').value,
-    publico: document.getElementById('f-publico').value,
-    barreira: document.getElementById('f-barreira').value,
-    solucoes: document.getElementById('f-solucoes').value,
-    trl: document.getElementById('f-trl').value,
-  };
-
-  // Get AI justification
-  let justification = '';
-  try {
-    const instrKey = result.primary;
-    justification = await getJustification(instrKey, responses, formData);
-  } catch(e) {
-    justification = `O instrumento recomendado é adequado para o seu caso com base nas respostas fornecidas. Consulte a base legal indicada para mais detalhes sobre os requisitos e procedimentos específicos.`;
-  }
-
-  // Hide loading, show result
-  document.getElementById('loading').classList.remove('active');
-  document.getElementById('sec-result').classList.add('active');
-
-  renderResult(result, justification, responses);
-  window.scrollTo(0, 0);
-}
+        // MATRIZ DE DECISÃO SIMPLIFICADA
+        if (answers.q1 === 'ready') {
+            badge.innerHTML = '<span class="result-badge badge-alt">LICITAÇÃO COMUM (Lei 14.133)</span>';
+            title.innerText = "Use o Pregão Eletrônico";
+            text.innerHTML = "Sua necessidade é de um objeto comum. Como a solução já existe no mercado, não há necessidade de um contrato de inovação. Utilize o critério de Menor Preço ou Maior Desconto.";
+        } 
+        else if (answers.q3 === 'process' || (answers.q2 === 'high' && answers.q4 === 'over')) {
+            badge.innerHTML = '<span class="result-badge badge-alt">ENCOMENDA TECNOLÓGICA (ETEC)</span>';
+            title.innerText = "Indicação: Encomenda Tecnológica";
+            text.innerHTML = "Devido ao alto risco tecnológico e ao foco no processo de pesquisa (PD&I), a ETEC é mais segura. Ela permite contratar o esforço de desenvolvimento mesmo que o resultado final seja incerto.";
+        }
+        else if (answers.q1 === 'innovation' && answers.q3 === 'result' && answers.q4 === 'under') {
+            badge.innerHTML = '<span class="result-badge badge-cpsi">CPSI (Marco Legal das Startups)</span>';
+            title.innerText = "Ideal para CPSI!";
+            text.innerHTML = "O <strong>Contrato Público de Solução Inovadora</strong> é perfeito aqui. Ele foca no teste de soluções (MVP) com teto de R$ 1,6 milhão por contrato. É mais ágil e permite que você pague pela entrega de resultados validados.";
+        }
+        else if (answers.q4 === 'over') {
+            badge.innerHTML = '<span class="result-badge badge-alt">DIÁLOGO COMPETITIVO</span>';
+            title.innerText = "Diálogo Competitivo";
+            text.innerHTML = "Como a solução precisa de inovação, mas o valor ultrapassa o limite do CPSI, o Diálogo Competitivo (Lei 14.133) permite que o órgão converse com o mercado para definir a melhor solução antes de licitar.";
+        }
+        else {
+            badge.innerHTML = '<span class="result-badge badge-cpsi">CPSI (Adaptado)</span>';
+            title.innerText = "CPSI é o caminho";
+            text.innerHTML = "Mesmo com risco moderado, o CPSI oferece a flexibilidade necessária para validar se a solução resolve seu problema real antes de uma contratação de escala.";
+        }
+    }
 </script>
+
 </body>
 </html>
