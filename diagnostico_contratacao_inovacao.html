@@ -1071,7 +1071,11 @@ Seja direto, use linguagem acessível (não excessivamente técnica), e conecte 
 
   const response = await fetch("https://api.anthropic.com/v1/messages", {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: { 
+      "Content-Type": "application/json",
+      "x-api-key": "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", // Insira sua chave aqui
+      "anthropic-version": "2023-06-01" // Este cabeçalho é obrigatório
+    },
     body: JSON.stringify({
       model: "claude-sonnet-4-20250514",
       max_tokens: 1000,
