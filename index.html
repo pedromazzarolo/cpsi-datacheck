@@ -3,243 +3,483 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Diagnóstico CPSI - Contratação de Inovação</title>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=DM+Serif+Display&display=swap');
+    <title>Cobogrid | Data Science</title>
+    
+    <!-- Importando as fontes oficiais do Manual Cobogrid -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@300;400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
 
+    <style>
+        /* Paleta de Cores Oficial Cobogrid */
         :root {
-            --bg: #F8F9FA;
-            --surface: #FFFFFF;
-            --ink: #1A1C1E;
-            --ink-soft: #44474E;
-            --accent: #005AC1; /* Azul institucional para confiança */
-            --accent-light: #D7E3FF;
-            --success: #198754;
-            --warning: #F59E0B;
-            --line: #DEE2E6;
-            --radius: 12px;
+            --azul-cobo: #030086;
+            --azul-sinaptico: #3052F0;
+            --ciano-dado: #14C4D9;
+            --branco: #FFFFFF;
+            --branco-gelo: #F5F6FB;
+            --cinza-nevoa: #DADDEC;
+            --grafite: #20222E;
+            --tinta: #0B0B1A;
+            
+            /* Tipografia */
+            --font-title: 'Space Grotesk', sans-serif;
+            --font-body: 'IBM Plex Sans', sans-serif;
+            --font-mono: 'IBM Plex Mono', monospace;
         }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--ink); line-height: 1.6; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-        .shell { max-width: 680px; margin: 0 auto; padding: 40px 20px; }
-        
-        .header { text-align: center; margin-bottom: 40px; }
-        .header h1 { font-family: 'DM Serif Display', serif; font-size: 32px; margin-bottom: 12px; }
-        .header p { color: var(--ink-soft); font-size: 16px; }
+        body {
+            background-color: var(--branco-gelo);
+            color: var(--tinta);
+            font-family: var(--font-body);
+            line-height: 1.6;
+        }
 
-        .card { background: var(--surface); border-radius: var(--radius); padding: 32px; border: 1px solid var(--line); box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
-        
-        .step-indicator { font-size: 12px; font-weight: 700; text-transform: uppercase; color: var(--accent); margin-bottom: 8px; display: block; }
-        
-        .question-box { display: none; animation: fadeIn 0.4s ease; }
-        .question-box.active { display: block; }
+        h1, h2, h3, .logo-text {
+            font-family: var(--font-title);
+        }
 
-        h2 { font-size: 20px; margin-bottom: 24px; color: var(--ink); }
+        .mono {
+            font-family: var(--font-mono);
+        }
 
-        .options-list { display: flex; flex-direction: column; gap: 12px; }
-        
-        .option-item {
-            border: 2px solid var(--line);
-            border-radius: var(--radius);
-            padding: 16px;
-            cursor: pointer;
-            transition: all 0.2s;
+        /* Navbar */
+        header {
+            background-color: var(--branco);
+            border-bottom: 1px solid var(--cinza-nevoa);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 2rem;
+        }
+
+        .logo {
             display: flex;
             align-items: center;
             gap: 12px;
+            text-decoration: none;
         }
 
-        .option-item:hover { border-color: var(--accent-light); background: #F0F4FF; }
-        .option-item.selected { border-color: var(--accent); background: var(--accent-light); }
-        
-        .radio-circle { width: 20px; height: 20px; border: 2px solid var(--line); border-radius: 50%; position: relative; }
-        .option-item.selected .radio-circle { border-color: var(--accent); }
-        .option-item.selected .radio-circle::after { content: ''; width: 10px; height: 10px; background: var(--accent); border-radius: 50%; position: absolute; top: 3px; left: 3px; }
+        .logo-text {
+            font-weight: 600;
+            font-size: 1.8rem;
+            color: var(--azul-cobo);
+            letter-spacing: -0.5px;
+        }
 
-        .btn-footer { margin-top: 32px; display: flex; justify-content: space-between; align-items: center; }
-        
-        .btn { padding: 12px 24px; border-radius: 8px; font-weight: 600; cursor: pointer; border: none; transition: 0.2s; }
-        .btn-next { background: var(--accent); color: white; }
-        .btn-next:disabled { opacity: 0.5; cursor: not-allowed; }
-        .btn-back { background: transparent; color: var(--ink-soft); }
+        /* Ícone CSS simulação da logo (Cobogó/Grid) */
+        .logo-icon {
+            width: 28px;
+            height: 28px;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2px;
+            background-color: var(--branco);
+            border: 1px solid var(--azul-cobo);
+            padding: 2px;
+            border-radius: 4px;
+        }
+        .logo-icon div { background-color: var(--azul-cobo); }
+        .logo-icon div:nth-child(2), .logo-icon div:nth-child(6), .logo-icon div:nth-child(8) { background: transparent; }
 
-        /* Resultado */
-        .result-card { display: none; }
-        .result-badge { display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 700; margin-bottom: 16px; }
-        .badge-cpsi { background: #D1FAE5; color: #065F46; }
-        .badge-alt { background: #FEF3C7; color: #92400E; }
-        
-        .recommendation-title { font-family: 'DM Serif Display', serif; font-size: 28px; margin-bottom: 16px; }
-        .justification { background: #F8F9FA; padding: 20px; border-radius: 8px; margin-top: 20px; border-left: 4px solid var(--accent); }
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+            align-items: center;
+        }
 
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        nav a {
+            text-decoration: none;
+            color: var(--grafite);
+            font-weight: 500;
+            font-size: 0.95rem;
+            transition: color 0.3s;
+        }
+
+        nav a:hover {
+            color: var(--azul-sinaptico);
+        }
+
+        .btn-contact {
+            background-color: var(--azul-cobo);
+            color: var(--branco);
+            padding: 0.6rem 1.2rem;
+            border-radius: 4px;
+            transition: background 0.3s;
+        }
+
+        .btn-contact:hover {
+            background-color: var(--azul-sinaptico);
+            color: var(--branco);
+        }
+
+        /* Seções Gerais */
+        section {
+            padding: 100px 2rem 80px 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .section-tag {
+            color: var(--azul-sinaptico);
+            font-family: var(--font-mono);
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            display: block;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 2.5rem;
+            color: var(--azul-cobo);
+            margin-bottom: 1rem;
+            font-weight: 600;
+        }
+
+        .section-subtitle {
+            text-align: center;
+            color: var(--grafite);
+            margin-bottom: 4rem;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+            font-size: 1.1rem;
+        }
+
+        /* 🏠 Home / Hero Section (Predominância Azul Cobô - 60% Regra) */
+        #home {
+            background-color: var(--azul-cobo);
+            color: var(--branco);
+            padding-top: 180px;
+            padding-bottom: 120px;
+            text-align: center;
+            max-width: 100%;
+        }
+
+        .home-content {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        #home h1 {
+            font-size: 4rem;
+            color: var(--branco);
+            line-height: 1.1;
+            margin-bottom: 1.5rem;
+            font-weight: 700;
+        }
+
+        #home h1 span {
+            color: var(--ciano-dado); /* Ciano para iluminar os números e insights */
+        }
+
+        #home p {
+            font-size: 1.25rem;
+            color: var(--branco-gelo);
+            max-width: 700px;
+            margin: 0 auto 3rem auto;
+            font-weight: 300;
+        }
+
+        .cta-button {
+            background-color: var(--ciano-dado);
+            color: var(--azul-cobo);
+            padding: 1rem 2rem;
+            border-radius: 4px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1.1rem;
+            font-family: var(--font-title);
+            transition: all 0.3s;
+            display: inline-block;
+        }
+
+        .cta-button:hover {
+            background-color: var(--branco);
+            transform: translateY(-2px);
+        }
+
+        /* 📊 Valores da Cobogrid */
+        .valores-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+            margin-top: -60px;
+            position: relative;
+            z-index: 10;
+            max-width: 1200px;
+            margin-left: auto;
+            margin-right: auto;
+            padding: 0 2rem;
+        }
+
+        .valor-card {
+            background: var(--branco);
+            padding: 2rem;
+            border-radius: 8px;
+            border: 1px solid var(--cinza-nevoa);
+            box-shadow: 0 10px 30px rgba(3, 0, 134, 0.05);
+        }
+
+        .valor-card h4 {
+            font-family: var(--font-mono);
+            color: var(--azul-cobo);
+            font-size: 1rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .valor-card p {
+            font-size: 0.9rem;
+            color: var(--grafite);
+        }
+
+        /* 🧩 Soluções (A Jornada de Dados) */
+        .solutions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .solution-card {
+            background-color: var(--branco);
+            padding: 3rem 2.5rem;
+            border-radius: 0; /* Mais sério e geométrico */
+            border: 1px solid var(--cinza-nevoa);
+            border-top: 4px solid var(--azul-cobo);
+            transition: all 0.3s;
+            position: relative;
+        }
+
+        .solution-card:hover {
+            border-top-color: var(--ciano-dado);
+            box-shadow: 0 10px 30px rgba(3, 0, 134, 0.08);
+        }
+
+        .solution-step {
+            font-family: var(--font-mono);
+            font-size: 1rem;
+            color: var(--azul-sinaptico);
+            margin-bottom: 1.5rem;
+            display: block;
+        }
+
+        .solution-card h3 {
+            font-size: 1.6rem;
+            color: var(--azul-cobo);
+            margin-bottom: 1rem;
+        }
+
+        .solution-card p {
+            color: var(--tinta);
+            font-size: 1rem;
+        }
+
+        /* 💻 Labs (Open Source) */
+        #labs {
+            background-color: var(--branco);
+            border-top: 1px solid var(--cinza-nevoa);
+            border-bottom: 1px solid var(--cinza-nevoa);
+            max-width: 100%;
+        }
+
+        .labs-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 4rem;
+        }
+
+        .labs-text {
+            flex: 1;
+        }
+
+        .labs-preview {
+            flex: 1;
+            background-color: var(--grafite);
+            color: var(--ciano-dado);
+            padding: 2rem;
+            border-radius: 4px;
+            font-family: var(--font-mono);
+            font-size: 0.9rem;
+            line-height: 1.8;
+            box-shadow: 0 20px 40px rgba(3, 0, 134, 0.15);
+        }
+
+        .labs-preview span { color: var(--cinza-nevoa); }
+
+        /* 📞 Contato & Rodapé */
+        footer {
+            background-color: var(--azul-cobo);
+            color: var(--branco);
+            text-align: center;
+            padding: 5rem 2rem 2rem 2rem;
+        }
+
+        footer h3 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .slogan-footer {
+            font-family: var(--font-mono);
+            color: var(--ciano-dado);
+            margin-bottom: 3rem;
+            font-size: 1.1rem;
+        }
+
+        footer p.copyright {
+            color: var(--azul-sinaptico);
+            font-size: 0.9rem;
+            margin-top: 5rem;
+            font-family: var(--font-mono);
+        }
+
+        @media (max-width: 768px) {
+            nav { display: none; }
+            #home h1 { font-size: 2.5rem; }
+            .labs-container { flex-direction: column; }
+        }
     </style>
 </head>
 <body>
 
-<div class="shell">
-    <div class="header">
-        <p>📊 Diagnóstico Ágil</p>
-        <h1>CPSI ou outra solução?</h1>
-        <p>Descubra em menos de 2 minutos o instrumento ideal para sua contratação de inovação.</p>
-    </div>
-
-    <div class="card">
-        <!-- Passo 1: Maturidade -->
-        <div class="question-box active" id="step1">
-            <span class="step-indicator">Passo 1 de 4</span>
-            <h2>A solução que você precisa já existe "pronta" no mercado?</h2>
-            <div class="options-list">
-                <div class="option-item" onclick="selectOption('q1', 'ready')">
-                    <div class="radio-circle"></div>
-                    <div><strong>Sim.</strong> É um produto/serviço de prateleira, basta comprar e instalar.</div>
+    <!-- MENU DE NAVEGAÇÃO -->
+    <header>
+        <div class="nav-container">
+            <a href="#home" class="logo">
+                <div class="logo-icon">
+                    <div></div><div></div><div></div>
+                    <div></div><div></div><div></div>
+                    <div></div><div></div><div></div>
                 </div>
-                <div class="option-item" onclick="selectOption('q1', 'innovation')">
-                    <div class="radio-circle"></div>
-                    <div><strong>Não/Parcialmente.</strong> Precisa ser adaptada, desenvolvida ou testada para o nosso contexto.</div>
-                </div>
-            </div>
+                <span class="logo-text">Cobogrid</span>
+            </a>
+            <nav>
+                <ul>
+                    <li><a href="#solucoes">Jornada de Dados</a></li>
+                    <li><a href="#labs">Open Source</a></li>
+                    <li><a href="#contato" class="btn-contact">Fale Conosco</a></li>
+                </ul>
+            </nav>
         </div>
+    </header>
 
-        <!-- Passo 2: Risco -->
-        <div class="question-box" id="step2">
-            <span class="step-indicator">Passo 2 de 4</span>
-            <h2>Existe o risco da solução não funcionar tecnicamente após o desenvolvimento?</h2>
-            <div class="options-list">
-                <div class="option-item" onclick="selectOption('q2', 'high')">
-                    <div class="radio-circle"></div>
-                    <div><strong>Alto Risco.</strong> É algo inédito ou pesquisa científica profunda.</div>
-                </div>
-                <div class="option-item" onclick="selectOption('q2', 'moderate')">
-                    <div class="radio-circle"></div>
-                    <div><strong>Risco Moderado.</strong> Inovação de mercado, startups ou melhoria de processos existentes.</div>
-                </div>
-                <div class="option-item" onclick="selectOption('q2', 'low')">
-                    <div class="radio-circle"></div>
-                    <div><strong>Baixo Risco.</strong> A tecnologia é conhecida, o desafio é apenas a implementação.</div>
-                </div>
-            </div>
+    <!-- 🏠 SEÇÃO HOME -->
+    <section id="home">
+        <div class="home-content">
+            <h1>Estruturando o caos para destravar o seu <span>Horizonte de Dados</span></h1>
+            <p>Transformamos dados brutos em decisões confiáveis, tornando a ciência de dados acessível e estratégica para empresas de todos os portes.</p>
+            <a href="#solucoes" class="cta-button">Conheça nossa Jornada</a>
         </div>
+    </section>
 
-        <!-- Passo 3: Pagamento -->
-        <div class="question-box" id="step3">
-            <span class="step-indicator">Passo 3 de 4</span>
-            <h2>O foco principal do órgão é:</h2>
-            <div class="options-list">
-                <div class="option-item" onclick="selectOption('q3', 'result')">
-                    <div class="radio-circle"></div>
-                    <div><strong>Resultado.</strong> Queremos uma solução funcionando (MVP/Protótipo).</div>
-                </div>
-                <div class="option-item" onclick="selectOption('q3', 'process')">
-                    <div class="radio-circle"></div>
-                    <div><strong>Pesquisa.</strong> Queremos financiar o esforço de descoberta, mesmo sem garantia de entrega final.</div>
-                </div>
-            </div>
+    <!-- VALORES (Baseado no Manual) -->
+    <div class="valores-grid">
+        <div class="valor-card">
+            <h4>01. Rigor</h4>
+            <p>Método antes de opinião. Toda conclusão é sustentada por evidência.</p>
         </div>
-
-        <!-- Passo 4: Valor -->
-        <div class="question-box" id="step4">
-            <span class="step-indicator">Passo 4 de 4</span>
-            <h2>Qual o orçamento estimado para o teste/desenvolvimento?</h2>
-            <div class="options-list">
-                <div class="option-item" onclick="selectOption('q4', 'under')">
-                    <div class="radio-circle"></div>
-                    <div>Até R$ 1,6 milhão.</div>
-                </div>
-                <div class="option-item" onclick="selectOption('q4', 'over')">
-                    <div class="radio-circle"></div>
-                    <div>Acima de R$ 1,6 milhão.</div>
-                </div>
-            </div>
+        <div class="valor-card">
+            <h4>02. Clareza</h4>
+            <p>Traduzimos o complexo. Se o cliente não entende, o trabalho não terminou.</p>
         </div>
-
-        <!-- Footer -->
-        <div class="btn-footer" id="navigation">
-            <button class="btn btn-back" id="btnBack" onclick="changeStep(-1)" style="visibility: hidden;">← Voltar</button>
-            <button class="btn btn-next" id="btnNext" onclick="changeStep(1)" disabled>Próximo</button>
+        <div class="valor-card">
+            <h4>03. Ética</h4>
+            <p>Dados são responsabilidade. Privacidade e transparência não se negociam.</p>
         </div>
-
-        <!-- Resultado Final -->
-        <div class="result-card" id="resultArea">
-            <div id="badgeTarget"></div>
-            <h2 class="recommendation-title" id="titleTarget"></h2>
-            <div class="justification" id="textTarget"></div>
-            <button class="btn btn-next" style="margin-top: 24px; width: 100%;" onclick="location.reload()">Novo Diagnóstico</button>
+        <div class="valor-card">
+            <h4>04. Curiosidade</h4>
+            <p>A melhor pergunta vale mais que a resposta óbvia. Investigamos sempre.</p>
         </div>
     </div>
-</div>
 
-<script>
-    let currentStep = 1;
-    const answers = { q1: null, q2: null, q3: null, q4: null };
-
-    function selectOption(question, value) {
-        answers[question] = value;
-        const stepDiv = document.getElementById('step' + currentStep);
-        const options = stepDiv.querySelectorAll('.option-item');
-        options.forEach((opt, idx) => {
-            opt.classList.remove('selected');
-            if(opt.getAttribute('onclick').includes(`'${value}'`)) opt.classList.add('selected');
-        });
-        document.getElementById('btnNext').disabled = false;
-    }
-
-    function changeStep(delta) {
-        if (currentStep + delta > 4) {
-            showResult();
-            return;
-        }
+    <!-- 🧩 SEÇÃO SOLUÇÕES -->
+    <section id="solucoes">
+        <span class="section-tag">Nossos Serviços</span>
+        <h2 class="section-title">A Jornada de Maturidade</h2>
+        <p class="section-subtitle">Acompanhamos a sua empresa em cada etapa analítica, do oceano caótico à inteligência preditiva.</p>
         
-        document.getElementById('step' + currentStep).classList.remove('active');
-        currentStep += delta;
-        document.getElementById('step' + currentStep).classList.add('active');
+        <div class="solutions-grid">
+            <!-- Produto 1 -->
+            <div class="solution-card">
+                <span class="solution-step">Fase_01 // Discovery</span>
+                <h3>Let's Talk about Data</h3>
+                <p>O mundo é um grande ocean lake de dados. Quer entender onde você pode minerar informações preciosas para o seu dia a dia? Vamos juntos mapear suas oportunidades.</p>
+            </div>
 
-        // UI Updates
-        document.getElementById('btnBack').style.visibility = currentStep > 1 ? 'visible' : 'hidden';
-        document.getElementById('btnNext').innerText = currentStep === 4 ? 'Gerar Resultado' : 'Próximo';
-        document.getElementById('btnNext').disabled = !answers['q' + currentStep];
-    }
+            <!-- Produto 2 -->
+            <div class="solution-card">
+                <span class="solution-step">Fase_02 // Cleaning_Viz</span>
+                <h3>Data Therapy</h3>
+                <p>Olhar para dados espalhados e relatórios confusos dá dor de cabeça? Respire fundo. Nós organizamos a casa, eliminamos o ruído e transformamos planilhas caóticas em dashboards claros.</p>
+            </div>
 
-    function showResult() {
-        document.getElementById('step' + currentStep).classList.remove('active');
-        document.getElementById('navigation').style.display = 'none';
-        const resultArea = document.getElementById('resultArea');
-        resultArea.style.display = 'block';
+            <!-- Produto 3 -->
+            <div class="solution-card">
+                <span class="solution-step">Fase_03 // Intelligence</span>
+                <h3>Data Horizon</h3>
+                <p>Quando a casa está organizada, o horizonte fica limpo. Destravamos o poder da inteligência avançada e da IA. Antecipe cenários, preveja tendências e enxergue o futuro.</p>
+            </div>
+        </div>
+    </section>
 
-        const badge = document.getElementById('badgeTarget');
-        const title = document.getElementById('titleTarget');
-        const text = document.getElementById('textTarget');
+    <!-- 💻 SEÇÃO LABS (OPEN SOURCE) -->
+    <section id="labs">
+        <div class="labs-container">
+            <div class="labs-text">
+                <span class="section-tag" style="text-align: left;">Open Source</span>
+                <h2 class="section-title" style="text-align: left;">Cobogrid Labs</h2>
+                <p style="margin-bottom: 2rem;">
+                    Acreditamos na democratização da tecnologia. Acesse nossos scripts de automação, conectores customizados e templates de engenharia de dados construídos para a comunidade.
+                </p>
+                <a href="#" class="cta-button" style="background-color: var(--azul-cobo); color: var(--branco);">Acessar Repositório</a>
+            </div>
+            <div class="labs-preview">
+                <span>// Pipeline de limpeza</span><br>
+                import cobogrid_core as cb<br><br>
+                <span># Carregando dados brutos</span><br>
+                df_raw = cb.extract("lake_data.csv")<br><br>
+                <span># Aplicando Data Therapy</span><br>
+                df_clean = cb.therapy_clean(df_raw, noise_reduction=True)<br><br>
+                print("accuracy = 0.984 | n=12.840")<br>
+                print("> Dados estruturados com sucesso.")
+            </div>
+        </div>
+    </section>
 
-        // MATRIZ DE DECISÃO SIMPLIFICADA
-        if (answers.q1 === 'ready') {
-            badge.innerHTML = '<span class="result-badge badge-alt">LICITAÇÃO COMUM (Lei 14.133)</span>';
-            title.innerText = "Use o Pregão Eletrônico";
-            text.innerHTML = "Sua necessidade é de um objeto comum. Como a solução já existe no mercado, não há necessidade de um contrato de inovação. Utilize o critério de Menor Preço ou Maior Desconto.";
-        } 
-        else if (answers.q3 === 'process' || (answers.q2 === 'high' && answers.q4 === 'over')) {
-            badge.innerHTML = '<span class="result-badge badge-alt">ENCOMENDA TECNOLÓGICA (ETEC)</span>';
-            title.innerText = "Indicação: Encomenda Tecnológica";
-            text.innerHTML = "Devido ao alto risco tecnológico e ao foco no processo de pesquisa (PD&I), a ETEC é mais segura. Ela permite contratar o esforço de desenvolvimento mesmo que o resultado final seja incerto.";
-        }
-        else if (answers.q1 === 'innovation' && answers.q3 === 'result' && answers.q4 === 'under') {
-            badge.innerHTML = '<span class="result-badge badge-cpsi">CPSI (Marco Legal das Startups)</span>';
-            title.innerText = "Ideal para CPSI!";
-            text.innerHTML = "O <strong>Contrato Público de Solução Inovadora</strong> é perfeito aqui. Ele foca no teste de soluções (MVP) com teto de R$ 1,6 milhão por contrato. É mais ágil e permite que você pague pela entrega de resultados validados.";
-        }
-        else if (answers.q4 === 'over') {
-            badge.innerHTML = '<span class="result-badge badge-alt">DIÁLOGO COMPETITIVO</span>';
-            title.innerText = "Diálogo Competitivo";
-            text.innerHTML = "Como a solução precisa de inovação, mas o valor ultrapassa o limite do CPSI, o Diálogo Competitivo (Lei 14.133) permite que o órgão converse com o mercado para definir a melhor solução antes de licitar.";
-        }
-        else {
-            badge.innerHTML = '<span class="result-badge badge-cpsi">CPSI (Adaptado)</span>';
-            title.innerText = "CPSI é o caminho";
-            text.innerHTML = "Mesmo com risco moderado, o CPSI oferece a flexibilidade necessária para validar se a solução resolve seu problema real antes de uma contratação de escala.";
-        }
-    }
-</script>
+    <!-- 📞 FOOTER / CONTATO -->
+    <footer id="contato">
+        <h3>Todo dado conta uma história.</h3>
+        <p class="slogan-footer">Deixe a gente ler a sua.</p>
+        
+        <p style="margin-bottom: 2.5rem; color: var(--branco-gelo);">Entre em contato com nosso time técnico e descubra a próxima fase da sua jornada.</p>
+        
+        <a href="mailto:contato@cobogrid.com.br" class="cta-button">Falar com Especialista</a>
+        
+        <p class="copyright">© 2026 COBOGRID DATA SCIENCE. ALL RIGHTS RESERVED.</p>
+    </footer>
 
 </body>
 </html>
