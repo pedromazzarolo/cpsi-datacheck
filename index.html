@@ -139,6 +139,30 @@
   .donut-leg .li{display:flex;align-items:center;gap:9px;font-size:12.5px}
   .donut-leg .sw{width:12px;height:12px;border-radius:4px}
   .donut-leg .lv{font-family:'IBM Plex Mono';font-size:11px;color:var(--ink-soft);margin-left:2px}
+  /* report pieces */
+  .idx-card{display:flex;flex-direction:column;gap:2px}
+  .idx-card .iv{font-family:'Archivo';font-weight:800;font-size:30px;letter-spacing:-.03em;line-height:1}
+  .idx-card .iv.muted{color:var(--ink-soft);font-size:20px;font-weight:700}
+  .idx-card .il{font-family:'IBM Plex Mono';font-size:9.5px;letter-spacing:.1em;color:var(--ink-soft);text-transform:uppercase;margin-top:8px}
+  .socio{display:flex;flex-direction:column}
+  .socio .sr{display:flex;justify-content:space-between;align-items:baseline;padding:11px 0;border-bottom:1px solid var(--line-2);gap:10px}
+  .socio .sr:last-child{border-bottom:none}
+  .socio .sl{font-size:12.5px;color:var(--ink-soft)}
+  .socio .sl small{font-family:'IBM Plex Mono';font-size:9px;color:var(--ink-soft);opacity:.7;margin-left:5px}
+  .socio .sv{font-family:'IBM Plex Mono';font-weight:600;font-size:14px}
+  .srcnote{font-family:'IBM Plex Mono';font-size:9px;letter-spacing:.04em;color:var(--ink-soft);opacity:.8;margin-top:14px;text-transform:uppercase}
+  .rank{display:flex;flex-direction:column;gap:11px}
+  .rank-row{display:grid;grid-template-columns:115px 1fr 92px 70px;align-items:center;gap:11px}
+  .rank-row .rl{font-size:12.5px;font-weight:500}
+  .rank-row .rp{font-family:'IBM Plex Mono';font-size:12px;text-align:right;color:var(--ink)}
+  .rank-row .rv{font-family:'IBM Plex Mono';font-size:9px;letter-spacing:.06em;text-transform:uppercase;text-align:center;color:var(--ink-soft);background:var(--concreto-2);border:1px solid var(--line);border-radius:20px;padding:3px 0}
+  .rank-head{display:grid;grid-template-columns:115px 1fr 92px 70px;gap:11px;margin-bottom:12px}
+  .rank-head span{font-family:'IBM Plex Mono';font-size:9px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-soft)}
+  .rank-head .rh-p{text-align:right}.rank-head .rh-v{text-align:center}
+  .soon{position:relative;height:215px;border:1px dashed rgba(24,33,31,.28);border-radius:12px;background:repeating-linear-gradient(90deg,transparent,transparent 11.1%,var(--line-2) 11.1%,var(--line-2) calc(11.1% + 1px));display:flex;flex-direction:column;align-items:center;justify-content:center;gap:13px;overflow:hidden}
+  .soon .axis{position:absolute;bottom:8px;left:0;right:0;display:flex;justify-content:space-around;font-family:'IBM Plex Mono';font-size:8.5px;color:var(--ink-soft);opacity:.55}
+  .soon .badge{display:inline-flex;align-items:center;gap:8px;background:var(--paper);border:1px solid var(--line);border-radius:22px;padding:9px 16px;font-family:'Archivo';font-weight:600;font-size:13px;color:var(--ink);box-shadow:var(--shadow)}
+  .soon p{font-size:11.5px;color:var(--ink-soft);max-width:340px;text-align:center;line-height:1.5}
 
   footer.foot{flex-shrink:0;border-top:1px solid var(--line);padding:11px 22px;display:flex;align-items:center;justify-content:space-between;gap:16px;background:var(--paper)}
   .foot .src{font-family:'IBM Plex Mono';font-size:9.5px;letter-spacing:.08em;color:var(--ink-soft);text-transform:uppercase}
@@ -244,7 +268,7 @@
       <div class="stage-head" style="max-width:1080px">
         <div>
           <div class="ttl display">Panorama do mercado</div>
-          <div class="dek">Indicadores agregados. Medianas de bairro calculadas por empreendimento — um lançamento não distorce o bairro.</div>
+          <div class="dek">Informe de mercado sobre transação real de ITBI. Medianas por empreendimento, recortes com k ≥ 5 — nada isola uma transação.</div>
         </div>
         <div class="pill-static"><span class="dot"></span>Tudo agregado</div>
       </div>
@@ -280,6 +304,7 @@ const SEG={residencial:6223,comercial:886};
 const ACAB=[["Superior",4869],["Médio",3422],["Simples",2784]];
 const FAIXAS=[["até R$3k",1227],["R$3–6k",4763],["R$6–10k",949],["R$10k+",170]];
 const INCORP=[["Guabiraba",11],["Madalena",10],["Caxangá",7],["Várzea",6],["Cordeiro",5],["Tamarineira",5]];
+const SOCIO=[["População residente","1.489 mil","2022"],["Área territorial","219 km²","2022"],["PIB per capita","R$ 30.428","2020"],["Domicílios","547 mil","2022"],["Apartamentos","166 mil","2022"],["Renda média domiciliar","R$ 4.867","2023"]];
 const TOTAL=7109;
 const DEKS={
   predios:"Cada ponto é um edifício com 5+ unidades distintas (k ≥ 5). A cor é o valor total típico da unidade; o tamanho, o porte do prédio. Toque para o detalhe.",
@@ -454,15 +479,33 @@ function renderMacro(){
   const maxF=Math.max(...FAIXAS.map(f=>f[1])),maxA=Math.max(...ACAB.map(a=>a[1])),maxI=Math.max(...INCORP.map(i=>i[1]));
   const tot=SEG.residencial+SEG.comercial,rPct=Math.round(SEG.residencial/tot*100),cPct=100-rPct;
   const r=46,circ=2*Math.PI*r,resLen=circ*SEG.residencial/tot;const top=rankTop();
+  const nBairros=Object.keys(PAYLOAD.data).length, nPredios=PAYLOAD.predios.length;
+  const anos=['jun/15','dez/16','dez/18','dez/20','dez/22','dez/24','dez/26'];
   g.innerHTML=`
-    <div class="card col-3"><div class="ch">Mediana geral</div><div class="bignum display">${brl(4481)}<small>por m² · geral</small></div></div>
-    <div class="card col-3"><div class="ch">Transações</div><div class="bignum display">${fmt(segN)}<small>${state.seg==='res'?'residencial':'comercial'} · após tratamento</small></div></div>
-    <div class="card col-6"><div class="ch">Distribuição</div><div class="cv">Transações por faixa de R$/m²</div>
-      <div class="dist">${FAIXAS.map((f,i)=>`<div class="db" style="height:${Math.round(f[1]/maxF*100)}%;background:${heat(3000+i*1700)}"><span>${f[0]}<br>${fmt(f[1])}</span></div>`).join('')}</div></div>
-    <div class="card col-7"><div class="ch">Topo do ranking · residencial · por empreendimento</div><div class="cv">Mediana do m² por bairro</div>
-      <div class="bars">${top.map(([nb,med])=>`<div class="bar-item"><span class="bl">${nice(nb)}</span>
+    <div class="card col-3"><div class="idx-card"><div class="iv display">${brl(4481)}</div><div class="il">mediana · R$/m² (geral)</div></div></div>
+    <div class="card col-3"><div class="idx-card"><div class="iv display">${fmt(TOTAL)}</div><div class="il">amostra · transações ITBI 2026</div></div></div>
+    <div class="card col-3"><div class="idx-card"><div class="iv display">${nBairros}<span style="font-size:18px"> bairros</span></div><div class="il">cobertura · ${nPredios} prédios k≥5</div></div></div>
+    <div class="card col-3"><div class="idx-card"><div class="iv display muted">em breve</div><div class="il">variação 12m · requer base 2015–26</div></div></div>
+
+    <div class="card col-5"><div class="ch">Contexto · IBGE</div><div class="cv">Informações socioeconômicas</div>
+      <div class="socio">${SOCIO.map(s=>`<div class="sr"><span class="sl">${s[0]}<small>${s[2]}</small></span><span class="sv">${s[1]}</span></div>`).join('')}</div>
+      <div class="srcnote">Fonte: IBGE · valores placeholder do informe FipeZAP</div></div>
+
+    <div class="card col-7"><div class="ch">Série histórica</div><div class="cv">Variação do preço de transação no tempo</div>
+      <div class="soon">
+        <div class="badge"><svg width="15" height="15" viewBox="0 0 100 100"><use href="#cobo" style="color:var(--petrol)"/></svg> Disponível com a base 2015–2026</div>
+        <p>A base de 2026 dá um retrato. Com os 11 anos de ITBI, isto vira uma série de <b>preço pago</b> — não de anúncio — comparável por empreendimento.</p>
+        <div class="axis">${anos.map(a=>`<span>${a}</span>`).join('')}</div>
+      </div></div>
+
+    <div class="card col-7"><div class="ch">Bairros mais representativos · residencial · por empreendimento</div><div class="cv">Nível e variação da mediana do m²</div>
+      <div class="rank-head"><span></span><span></span><span class="rh-p">mediana/m²</span><span class="rh-v">12 meses</span></div>
+      <div class="rank">${top.map(([nb,med])=>`<div class="rank-row">
+        <span class="rl">${nice(nb)}</span>
         <div class="bar-track"><div class="bar-fill" style="width:${Math.round(med/6500*100)}%;background:${heat(med)}"></div></div>
-        <span class="bv">${brl(med)}</span></div>`).join('')}</div></div>
+        <span class="rp">${brl(med)}</span>
+        <span class="rv">em breve</span></div>`).join('')}</div></div>
+
     <div class="card col-5"><div class="ch">Composição</div><div class="cv">Residencial × Comercial</div>
       <div class="donut-wrap"><svg width="120" height="120" viewBox="0 0 120 120">
         <circle cx="60" cy="60" r="${r}" fill="none" stroke="var(--concreto)" stroke-width="16"/>
@@ -473,14 +516,22 @@ function renderMacro(){
           <div class="li"><span class="sw" style="background:var(--petrol)"></span>Residencial <span class="lv">${fmt(SEG.residencial)} · ${rPct}%</span></div>
           <div class="li"><span class="sw" style="background:var(--concreto)"></span>Comercial <span class="lv">${fmt(SEG.comercial)} · ${cPct}%</span></div>
         </div></div></div>
-    <div class="card col-7"><div class="ch">Eixo extra · não estava na base original</div><div class="cv">Mediana do m² por padrão de acabamento</div>
+
+    <div class="card col-6"><div class="ch">Distribuição</div><div class="cv">Transações por faixa de R$/m²</div>
+      <div class="dist">${FAIXAS.map((f,i)=>`<div class="db" style="height:${Math.round(f[1]/maxF*100)}%;background:${heat(3000+i*1700)}"><span>${f[0]}<br>${fmt(f[1])}</span></div>`).join('')}</div></div>
+    <div class="card col-6"><div class="ch">Eixo extra · não estava na base original</div><div class="cv">Mediana do m² por padrão de acabamento</div>
       <div class="bars">${ACAB.map(a=>`<div class="bar-item"><span class="bl">${a[0]}</span>
         <div class="bar-track"><div class="bar-fill" style="width:${Math.round(a[1]/maxA*100)}%;background:${heat(a[1])}"></div></div>
         <span class="bv">${brl(a[1])}</span></div>`).join('')}</div></div>
-    <div class="card col-5"><div class="ch">Pulo do gato B2B · agregado por bairro</div><div class="cv">Potencial de incorporação</div>
+
+    <div class="card col-7"><div class="ch">Pulo do gato B2B · agregado por bairro</div><div class="cv">Potencial de incorporação</div>
       <div class="bars">${INCORP.map(i=>`<div class="bar-item"><span class="bl">${i[0]}</span>
         <div class="bar-track"><div class="bar-fill" style="width:${Math.round(i[1]/maxI*100)}%;background:var(--petrol)"></div></div>
-        <span class="bv">${i[1]} imóveis</span></div>`).join('')}</div></div>`;
+        <span class="bv">${i[1]} imóveis</span></div>`).join('')}</div></div>
+    <div class="card col-5"><div class="ch">Sobre o índice</div><div class="cv">Metodologia</div>
+      <div class="socio" style="font-size:12px;color:var(--ink-soft);line-height:1.55">
+        Construído sobre <b>transação real de ITBI</b> (valor registrado, não anúncio). Mediana calculada <b>por empreendimento</b>, para um lançamento não distorcer o bairro. Só são exibidos recortes com <b>k ≥ 5</b>. Valor de avaliação para fins de ITBI tende a ficar abaixo do preço de mercado.
+      </div></div>`;
 }
 
 function setView(v){state.view=v;
